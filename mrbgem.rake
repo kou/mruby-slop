@@ -15,6 +15,4 @@ MRuby::Gem::Specification.new("mruby-slop") do |spec|
   spec.add_dependency("mruby-string-ext")
   spec.add_dependency("mruby-onig-regexp")
   spec.add_dependency("mruby-proc-ext")
-
-  spec.add_dependency("mruby-pp")
 end
