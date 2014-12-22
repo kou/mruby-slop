@@ -8,7 +8,7 @@ MRuby::Gem::Specification.new("mruby-slop") do |spec|
     "Kouhei Sutou",
     "Lee Jarvis",
   ]
-  spec.version = "3.6.0"
+  spec.version = "3.6.1"
   spec.add_dependency("mruby-array-ext")
   spec.add_dependency("mruby-enumerator")
   spec.add_dependency("mruby-hash-ext")
