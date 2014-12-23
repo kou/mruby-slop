@@ -38,3 +38,13 @@ assert("slop - parse - option - short") do
                  argv,
                ])
 end
+
+assert("slop - help") do
+  $0 = "test/mrb.rb"
+  slop = Slop.new
+  slop.on("-l=", "--log=", "Log to PATH")
+  assert_equal(<<-HELP.chomp, slop.help)
+Usage: mrb [options]
+    -l, --log      Log to PATH
+  HELP
+end
