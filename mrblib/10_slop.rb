@@ -442,7 +442,8 @@ class Slop
 
     banner = config[:banner]
     if banner.nil?
-      banner = "Usage: #{File.basename($0, '.*')}"
+      basename = ($0 || "").split(/[\/\\]/).last.gsub(/\..*\z/, "")
+      banner = "Usage: #{basename}"
       banner << " #{@command}" if @command
       banner << " [command]" if @commands.any?
       banner << " [options]"
