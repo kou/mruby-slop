@@ -21,3 +21,20 @@ assert("slop - parse - option - processed") do
                  argv,
                ])
 end
+
+assert("slop - parse - option - short") do
+  argv = ["-l/tmp/log", "path"]
+  options = Slop.parse!(argv) do |parser|
+    parser.on("-l=", "Log to PATH")
+  end
+  assert_equal([
+                 {
+                   :l => "/tmp/log",
+                 },
+                 ["path"],
+               ],
+               [
+                 options.to_hash,
+                 argv,
+               ])
+end

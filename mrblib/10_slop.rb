@@ -643,10 +643,11 @@ class Slop
 
   def extract_short_flag(objects, config)
     flag = objects[0].to_s
-    if flag =~ /\A-?\w=?\z/
+    if flag =~ /\A-?(\w)=?\z/
+      short_flag = $1
       config[:argument] ||= flag.end_with?('=')
       objects.shift
-      flag.delete('-=')
+      short_flag
     end
   end
 
