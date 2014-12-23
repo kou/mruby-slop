@@ -13,6 +13,7 @@ MRuby::Gem::Specification.new("mruby-slop") do |spec|
   spec.add_dependency("mruby-enumerator")
   spec.add_dependency("mruby-hash-ext")
   spec.add_dependency("mruby-string-ext")
+  spec.add_dependency("mruby-symbol-ext")
   spec.add_dependency("mruby-onig-regexp")
   spec.add_dependency("mruby-proc-ext")
 end
