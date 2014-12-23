@@ -442,7 +442,7 @@ class Slop
 
     banner = config[:banner]
     if banner.nil?
-      basename = ($0 || "").split(/[\/\\]/).last.gsub(/\..*\z/, "")
+      basename = ($0 || "-").split(/[\/\\]/).last.gsub(/\..*\z/, "")
       banner = "Usage: #{basename}"
       banner << " #{@command}" if @command
       banner << " [command]" if @commands.any?
