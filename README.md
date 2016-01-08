@@ -1,7 +1,6 @@
 # mruby-slop
 
-[Slop](https://github.com/leejarvis/slop) for mruby. It is imported
-from slop 3.6.0.
+[Slop](https://github.com/leejarvis/slop) for mruby. It is imported from slop 4.1.2.
 
 ## Install
 
