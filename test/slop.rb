@@ -1,14 +1,14 @@
 assert("slop - parse - option - nothing") do
   argv = ["path"]
-  options = Slop.parse!(argv) do |parser|
+  options = Slop.parse(argv) do |parser|
   end
-  assert_equal(["path"], argv)
+  assert_equal(["path"], options.arguments)
 end
 
 assert("slop - parse - option - processed") do
   argv = ["--log", "/tmp/log", "path"]
-  options = Slop.parse!(argv) do |parser|
-    parser.on("--log=", "Log to PATH")
+  options = Slop.parse(argv) do |parser|
+    parser.string("--log", "Log to PATH")
   end
   assert_equal([
                  {
@@ -18,14 +18,14 @@ assert("slop - parse - option - processed") do
                ],
                [
                  options.to_hash,
-                 argv,
+                 options.arguments,
                ])
 end
 
 assert("slop - parse - option - short") do
-  argv = ["-l/tmp/log", "path"]
-  options = Slop.parse!(argv) do |parser|
-    parser.on("-l=", "Log to PATH")
+  argv = ["-l", "/tmp/log", "path"]
+  options = Slop.parse(argv) do |parser|
+    parser.string("-l", "Log to PATH")
   end
   assert_equal([
                  {
@@ -35,16 +35,16 @@ assert("slop - parse - option - short") do
                ],
                [
                  options.to_hash,
-                 argv,
+                 options.arguments,
                ])
 end
 
-assert("slop - help") do
+assert("slop - to_s") do
   $0 = "test/mrb.rb"
-  slop = Slop.new
-  slop.on("-l=", "--log=", "Log to PATH")
-  assert_equal(<<-HELP.chomp, slop.help)
-Usage: mrb [options]
-    -l, --log      Log to PATH
+  options = Slop::Options.new
+  options.string("-l", "--log", "Log to PATH")
+  assert_equal(<<-HELP, options.to_s)
+usage: test/mrb.rb [options]
+    -l, --log  Log to PATH
   HELP
 end
