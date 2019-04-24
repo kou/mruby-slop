@@ -39,6 +39,23 @@ assert("slop - parse - option - short") do
                ])
 end
 
+assert("slop - parse - option allow leading -") do
+  argv = ["-f", "-time"]
+  options = Slop.parse(argv) do |parser|
+    parser.string("-f", "Log format")
+  end
+  assert_equal([
+                 {
+                   :f => "-time",
+                 },
+                 []
+               ],
+               [
+                 options.to_hash,
+                 options.arguments,
+               ])
+end
+
 assert("slop - to_s") do
   $0 = "test/mrb.rb"
   options = Slop::Options.new
