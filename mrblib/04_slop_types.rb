@@ -44,7 +44,7 @@ module Slop
   # Cast the option argument to an Integer.
   class IntegerOption < Option
     def call(value)
-      value =~ /\A\d+\z/ && value.to_i
+      value =~ /\A-?\d+\z/ && value.to_i
     end
   end
   IntOption = IntegerOption
@@ -53,7 +53,7 @@ module Slop
   class FloatOption < Option
     def call(value)
       # TODO: scientific notation, etc.
-      value =~ /\A\d*\.*\d+\z/ && value.to_f
+      value =~ /\A-?\d*\.*\d+\z/ && value.to_f
     end
   end
 
@@ -62,7 +62,11 @@ module Slop
   class ArrayOption < Option
     def call(value)
       @value ||= []
-      @value.concat value.split(delimiter, limit)
+      if delimiter
+        @value.concat value.split(delimiter, limit)
+      else
+        @value << value
+      end
     end
 
     def default_value
@@ -70,7 +74,7 @@ module Slop
     end
 
     def delimiter
-      config[:delimiter] || ","
+      config.fetch(:delimiter, ",")
     end
 
     def limit

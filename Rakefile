@@ -4,12 +4,22 @@
 
 task :default => :test
 
+config = File.expand_path("config/test.rb")
+
 desc "Run test"
 task :test => "mruby" do
-  ENV["MRUBY_CONFIG"] = File.expand_path("config/test.rb")
+  ENV["MRUBY_CONFIG"] = config
   cd("mruby") do
     sh("rake", "all")
     sh("./minirake", "-v", "test")
+  end
+end
+
+desc "Clean"
+task :clean do
+  ENV["MRUBY_CONFIG"] = config
+  cd("mruby") do
+    sh("rake", "clean")
   end
 end
 

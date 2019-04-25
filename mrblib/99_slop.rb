@@ -1,6 +1,6 @@
 
 module Slop
-  VERSION = '4.2.1'
+  VERSION = '4.6.2'
 
   # Parse an array of options (defaults to ARGV). Accepts an
   # optional hash of configuration options and block.
@@ -13,7 +13,7 @@ module Slop
   #   opts.to_hash #=> { host: 'localhost' }
   #
   # Returns a Slop::Result.
-  def self.parse(items = ARGV, config={}, &block)
+  def self.parse(items = ARGV, **config, &block)
     Options.new(config, &block).parse(items)
   end
 
@@ -25,6 +25,10 @@ module Slop
   # Returns true if an option is defined.
   def self.option_defined?(name)
     const_defined?(string_to_option(name.to_s))
+  rescue NameError
+    # If a NameError is raised, it wasn't a valid constant name,
+    # and thus couldn't have been defined.
+    false
   end
 
   # Example:

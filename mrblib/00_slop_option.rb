@@ -3,6 +3,8 @@ module Slop
     DEFAULT_CONFIG = {
       help: true,
       tail: false,
+      underscore_flags: true,
+      required: false,
     }
 
     # An Array of flags this option matches.
@@ -25,7 +27,7 @@ module Slop
     # The end value for this option.
     attr_writer :value
 
-    def initialize(flags, desc, config={}, &block)
+    def initialize(flags, desc, **config, &block)
       @flags  = flags
       @desc   = desc
       @config = DEFAULT_CONFIG.merge(config)
@@ -100,6 +102,11 @@ module Slop
       config[:suppress_errors]
     end
 
+    # Returns true if an exception should be raised when this option isn't supplied.
+    def required?
+      config[:required]
+    end
+
     # Returns all flags joined by a comma. Used by the help string.
     def flag
       flags.join(", ")
@@ -107,7 +114,14 @@ module Slop
 
     # Returns the last key as a symbol. Used in Options.to_hash.
     def key
-      (config[:key] || flags.last.sub(/\A--?/, '')).gsub("-", "_").to_sym
+      key = config[:key] || flags.last.sub(/\A--?/, '')
+      key = key.tr '-', '_' if underscore_flags?
+      key.to_sym
+    end
+
+    # Returns true if this option should be displayed with dashes transformed into underscores.
+    def underscore_flags?
+      config[:underscore_flags]
     end
 
     # Returns true if this option should be displayed in help text.
@@ -127,8 +141,7 @@ module Slop
     end
 
     # Returns the help text for this option (flags and description).
-    def to_s(options={})
-      offset = options[:offset] || 0
+    def to_s(offset: 0)
       "%-#{offset}s  %s" % [flag, desc]
     end
   end

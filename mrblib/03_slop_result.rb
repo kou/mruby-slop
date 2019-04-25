@@ -33,7 +33,11 @@ module Slop
 
     # Returns an Option if it exists. Ignores any prefixed hyphens.
     def option(flag)
-      cleaned = -> (f) { f.to_s.sub(/\A--?/, '').gsub('_', '-') }
+      cleaned = -> (f) do
+        key = f.to_s.sub(/\A--?/, '')
+        key = key.tr '-', '_' if parser.config[:underscore_flags]
+        key.to_sym
+      end
       options.find do |o|
         o.flags.any? { |f| cleaned.(f) == cleaned.(flag) }
       end
@@ -48,7 +52,7 @@ module Slop
     end
 
     def respond_to_missing?(name, include_private = false)
-      name.to_s.end_with?("?")
+      name.to_s.end_with?("?") || super
     end
 
     # Returns an Array of Option instances that were used.
@@ -83,8 +87,8 @@ module Slop
     end
     alias to_h to_hash
 
-    def to_s(opts={})
-      options.to_s(opts)
+    def to_s(**opts)
+      options.to_s(**opts)
     end
   end
 end

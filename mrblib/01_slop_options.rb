@@ -3,9 +3,10 @@ module Slop
     include Enumerable
 
     DEFAULT_CONFIG = {
-      suppress_errors: false,
-      type:            "null",
-      banner:          true,
+      suppress_errors:  false,
+      type:             "null",
+      banner:           true,
+      underscore_flags: true,
     }
 
     # The Array of Option instances we've created.
@@ -23,10 +24,10 @@ module Slop
     # The String banner prefixed to the help string.
     attr_accessor :banner
 
-    def initialize(config={})
+    def initialize(**config)
       @options    = []
       @separators = []
-      @banner     = "usage: #{$0} [options]"
+      @banner     = config[:banner].is_a?(String) ? config[:banner] : config.fetch(:banner, "usage: #{$0} [options]")
       @config     = DEFAULT_CONFIG.merge(config)
       @parser     = Parser.new(self, @config)
 
@@ -47,12 +48,7 @@ module Slop
     #   opts.to_hash #=> {}
     #
     # Returns the newly created Option subclass.
-    def on(*flags, &block)
-      if flags.last.is_a?(Hash)
-        config = flags.pop
-      else
-        config = {}
-      end
+    def on(*flags, **config, &block)
       desc   = flags.pop unless flags.last.start_with?('-')
       config = self.config.merge(config)
       klass  = Slop.string_to_option_class(config[:type].to_s)
@@ -65,7 +61,7 @@ module Slop
     # the help text.
     def separator(string)
       if separators[options.size]
-        separators.last << "\n#{string}"
+        separators[-1] += "\n#{string}"
       else
         separators[options.size] = string
       end
@@ -83,17 +79,17 @@ module Slop
 
     # Handle custom option types. Will fall back to raising an
     # exception if an option is not defined.
-    def method_missing(name, *args, &block)
+    def method_missing(name, *args, **config, &block)
       if respond_to_missing?(name)
         config[:type] = name
-        on(*args, &block)
+        on(*args, config, &block)
       else
         super
       end
     end
 
     def respond_to_missing?(name, include_private = false)
-      Slop.option_defined?(name)
+      Slop.option_defined?(name) || super
     end
 
     # Return a copy of our options Array.
@@ -102,18 +98,21 @@ module Slop
     end
 
     # Returns the help text for this options. Used by Result#to_s.
-    def to_s(opts={})
-      prefix = opts[:prefix] || " " * 4
+    def to_s(prefix: " " * 4)
       str = config[:banner] ? "#{banner}\n" : ""
       len = longest_flag_length
 
-      options.select(&:help?).sort_by(&:tail).each_with_index do |opt, i|
+      options.select(&:help?).each_with_index.sort_by{ |o,i| [o.tail, i] }.each do |opt, i|
         # use the index to fetch an associated separator
         if sep = separators[i]
           str << "#{sep}\n"
         end
 
         str << "#{prefix}#{opt.to_s(offset: len)}\n"
+      end
+
+      if sep = separators[options.size]
+        str << "#{sep}\n"
       end
 
       str
