@@ -16,9 +16,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
-        path: mruby
-        ref: "${{ matrix.mruby-version }}"
-        repository: mruby/mruby
+        with:
+          path: mruby
+          ref: "${{ matrix.mruby-version }}"
+          repository: mruby/mruby
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: "ruby"
