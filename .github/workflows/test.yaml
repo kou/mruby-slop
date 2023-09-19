@@ -1,0 +1,33 @@
+name: Test
+on:
+  - push
+  - pull_request
+jobs:
+  run:
+    name: ${{ mruby-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        mruby-version:
+          - "3.0.0"
+          - "3.1.0"
+          - "3.2.0"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        path: mruby
+        ref: "${{ matrix.mruby-version }}"
+        repository: mruby/mruby
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "ruby"
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y \
+            bison \
+            gperf
+      - name: Test
+        run: |
+          rake
