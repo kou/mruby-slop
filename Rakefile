@@ -15,7 +15,7 @@ desc "Run test"
 task :test => "mruby" do
   ENV["MRUBY_CONFIG"] = config
   cd("mruby") do
-    sh("rake", "all")
+    sh("rake", "all", "--multitask")
     sh("./minirake", "-v", "test")
   end
 end

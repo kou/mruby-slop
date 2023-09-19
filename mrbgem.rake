@@ -1,6 +1,6 @@
 # -*- ruby -*-
 #
-# Copyright (C) 2014-2016 Kouhei Sutou <kou@cozmixng.org>
+# Copyright (C) 2014-2023 Sutou Kouhei <kou@cozmixng.org>
 
 MRuby::Gem::Specification.new("mruby-slop") do |spec|
   spec.license = "MIT"
@@ -8,8 +8,9 @@ MRuby::Gem::Specification.new("mruby-slop") do |spec|
     "Kouhei Sutou",
     "Lee Jarvis",
   ]
-  spec.version = "4.6.2"
+  spec.version = "4.10.1"
   spec.add_dependency("mruby-array-ext")
+  spec.add_dependency("mruby-enum-ext")
   spec.add_dependency("mruby-enumerator")
   spec.add_dependency("mruby-hash-ext")
   spec.add_dependency("mruby-object-ext")
