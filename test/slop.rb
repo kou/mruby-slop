@@ -41,7 +41,8 @@ end
 
 assert("slop - to_s") do
   $0 = "test/mrb.rb"
-  options = Slop::Options.new
+  options = Slop::Options.new do
+  end
   options.string("-l", "--log", "Log to PATH")
   assert_equal(<<-HELP, options.to_s)
 usage: test/mrb.rb [options]
