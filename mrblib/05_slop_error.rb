@@ -22,8 +22,9 @@ module Slop
     end
   end
 
-  # Raised when an unknown option is parsed. Suppress
-  # with the `suppress_errors` config option.
+  # Raised when an unknown option is parsed or when trying to fetch an
+  # unexisting option via `Slop::Result#fetch`.
+  # Suppress with the `suppress_errors` config option.
   class UnknownOption < Error
     attr_reader :flag
 
@@ -36,5 +37,17 @@ module Slop
   # Raised when a required option is *not* parsed.
   # Suppress with the `suppress_errors` config option.
   class MissingRequiredOption < Error
+  end
+
+  # Raised when a given option is provided by the user and does not
+  # match the expected format for that type. This is only raised if
+  # validate_types is set to true.
+  class InvalidOptionValue < Error
+    attr_reader :flag
+
+    def initialize(msg, flag)
+      super(msg)
+      @flag = flag
+    end
   end
 end

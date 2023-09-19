@@ -1,6 +1,6 @@
 
 module Slop
-  VERSION = '4.6.2'
+  VERSION = '4.10.1'
 
   # Parse an array of options (defaults to ARGV). Accepts an
   # optional hash of configuration options and block.
@@ -14,7 +14,7 @@ module Slop
   #
   # Returns a Slop::Result.
   def self.parse(items = ARGV, **config, &block)
-    Options.new(config, &block).parse(items)
+    Options.new(**config, &block).parse(items)
   end
 
   # Example:

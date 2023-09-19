@@ -6,6 +6,11 @@ task :default => :test
 
 config = File.expand_path("config/test.rb")
 
+desc "Checkout mruby"
+directory("mruby") do
+  sh("git", "clone", "https://github.com/mruby/mruby.git")
+end
+
 desc "Run test"
 task :test => "mruby" do
   ENV["MRUBY_CONFIG"] = config

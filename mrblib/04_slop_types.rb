@@ -6,6 +6,13 @@ module Slop
     end
   end
 
+  # Cast the option argument to a symbol.
+  class SymbolOption < Option
+    def call(value)
+      value.to_sym
+    end
+  end
+
   # Cast the option argument to true or false.
   # Override default_value to default to false instead of nil.
   # This option type does not expect an argument. However, the API
@@ -13,6 +20,20 @@ module Slop
   # an explicit false value
   class BoolOption < Option
     attr_accessor :explicit_value
+
+    FALSE_VALUES = [false, 'false', 'no', 'off', '0'].freeze
+    TRUE_VALUES = [true, 'true', 'yes', 'on', '1'].freeze
+    VALID_VALUES = (FALSE_VALUES + TRUE_VALUES).freeze
+
+    def valid?(value)
+      # If we don't want to validate the type, then we don't care if the value
+      # is valid or not. Otherwise we would prevent boolean flags followed by
+      # arguments from being parsed correctly.
+      return true unless config[:validate_type]
+
+      return true if value.is_a?(String) && value.start_with?("--")
+      value.nil? || VALID_VALUES.include?(value)
+    end
 
     def call(value)
       self.explicit_value = value
@@ -28,7 +49,7 @@ module Slop
     end
 
     def force_false?
-      explicit_value == false
+      FALSE_VALUES.include?(explicit_value)
     end
 
     def default_value
@@ -43,17 +64,28 @@ module Slop
 
   # Cast the option argument to an Integer.
   class IntegerOption < Option
+    INT_STRING_REGEXP = /\A[+-]?\d+\z/.freeze
+
+    def valid?(value)
+      value =~ INT_STRING_REGEXP
+    end
+
     def call(value)
-      value =~ /\A-?\d+\z/ && value.to_i
+      value.to_i
     end
   end
   IntOption = IntegerOption
 
   # Cast the option argument to a Float.
   class FloatOption < Option
+    FLOAT_STRING_REGEXP = /\A[+-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+-]?\d+)?\z/.freeze
+
+    def valid?(value)
+      value =~ FLOAT_STRING_REGEXP
+    end
+
     def call(value)
-      # TODO: scientific notation, etc.
-      value =~ /\A-?\d*\.*\d+\z/ && value.to_f
+      value.to_f
     end
   end
 

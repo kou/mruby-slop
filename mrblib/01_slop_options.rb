@@ -7,6 +7,7 @@ module Slop
       type:             "null",
       banner:           true,
       underscore_flags: true,
+      validate_types:   false,
     }
 
     # The Array of Option instances we've created.
@@ -24,12 +25,15 @@ module Slop
     # The String banner prefixed to the help string.
     attr_accessor :banner
 
-    def initialize(**config)
+    # Whether we should validate types of values provided by the user
+    attr_accessor :validate_types
+
+    def initialize(**config, &block)
       @options    = []
       @separators = []
       @banner     = config[:banner].is_a?(String) ? config[:banner] : config.fetch(:banner, "usage: #{$0} [options]")
       @config     = DEFAULT_CONFIG.merge(config)
-      @parser     = Parser.new(self, @config)
+      @parser     = Parser.new(self, **@config)
 
       yield self if block_given?
     end
@@ -52,14 +56,14 @@ module Slop
       desc   = flags.pop unless flags.last.start_with?('-')
       config = self.config.merge(config)
       klass  = Slop.string_to_option_class(config[:type].to_s)
-      option = klass.new(flags, desc, config, &block)
+      option = klass.new(flags, desc, **config, &block)
 
       add_option option
     end
 
     # Add a separator between options. Used when displaying
     # the help text.
-    def separator(string)
+    def separator(string = "")
       if separators[options.size]
         separators[-1] += "\n#{string}"
       else
@@ -82,7 +86,7 @@ module Slop
     def method_missing(name, *args, **config, &block)
       if respond_to_missing?(name)
         config[:type] = name
-        on(*args, config, &block)
+        on(*args, **config, &block)
       else
         super
       end
@@ -102,17 +106,17 @@ module Slop
       str = config[:banner] ? "#{banner}\n" : ""
       len = longest_flag_length
 
-      options.select(&:help?).each_with_index.sort_by{ |o,i| [o.tail, i] }.each do |opt, i|
+      options.select.each_with_index.sort_by{ |o,i| [o.tail, i] }.each do |opt, i|
         # use the index to fetch an associated separator
         if sep = separators[i]
-          str << "#{sep}\n"
+          str += "#{sep}\n"
         end
 
-        str << "#{prefix}#{opt.to_s(offset: len)}\n"
+        str += "#{prefix}#{opt.to_s(offset: len)}\n" if opt.help?
       end
 
       if sep = separators[options.size]
-        str << "#{sep}\n"
+        str += "#{sep}\n"
       end
 
       str
