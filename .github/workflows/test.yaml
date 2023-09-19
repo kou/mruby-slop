@@ -32,4 +32,4 @@ jobs:
             libonig-dev
       - name: Test
         run: |
-          rake
+          rake --multitask
